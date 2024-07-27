@@ -10,4 +10,3 @@ def greet():
     name = data.get('name')
     greeting = f"Welcome, {name}!"
     return jsonify({'greeting': greeting})
-
