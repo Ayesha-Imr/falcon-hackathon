@@ -8,12 +8,8 @@ export default function Home() {
   const [greeting, setGreeting] = useState('');
 
   const handleGreeting = async () => {
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/greet`, { name });
-      setGreeting(response.data.greeting);
-    } catch (error) {
-      console.error("Error fetching the greeting:", error);
-    }
+    const response = await axios.post('/greet', { name });
+    setGreeting(response.data.greeting);
   };
 
   return (
@@ -23,7 +19,7 @@ export default function Home() {
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="border p-2 mb-4 w-full text-black"
+        className="border p-2 mb-4 w-full text-black" 
         placeholder="Enter your name"
       />
       <button
