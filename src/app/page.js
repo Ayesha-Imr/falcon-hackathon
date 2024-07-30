@@ -8,8 +8,12 @@ export default function Home() {
   const [greeting, setGreeting] = useState('');
 
   const handleGreeting = async () => {
-    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/greet`, { name });
-    setGreeting(response.data.greeting);
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/greet`, { name });
+      setGreeting(response.data.greeting);
+    } catch (error) {
+      console.error("Error fetching the greeting:", error);
+    }
   };
 
   return (
