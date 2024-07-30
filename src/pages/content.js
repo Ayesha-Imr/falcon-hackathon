@@ -1,5 +1,3 @@
-// src/pages/content.js
-
 export default function ContentPage() {
   return (
     <div>
