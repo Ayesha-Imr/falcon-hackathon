@@ -1,7 +1,37 @@
-export default function IndexPage() {
+import Header from "@/components/header";
+import { Button } from "@/components/ui/button";
+import axios from 'axios';
+import { useState } from 'react';
+export default function Home() {
+  const [name, setName] = useState('');
+  const [greeting, setGreeting] = useState('');
+
+  const handleGreeting = async () => {
+    const response = await axios.post('/greet', { name });
+    // if running locally, then change the above line to
+    // const response = await axios.post('http://127.0.0.1:5000/greet', { name });
+    setGreeting(response.data.greeting);
+  };
+
   return (
-    <div>
-      <h1>Welcome to My App</h1>
+    
+    <div className="container mx-auto p-4">
+      <Header/>
+      <h1 className="text-2xl font-bold mb-4">Greeting App (type your name and press the button)</h1>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="border p-2 mb-4 w-full text-black" 
+        placeholder="Enter your name"
+      />
+      <Button
+        onClick={handleGreeting}
+       
+      >
+        Greeting
+      </Button>
+      {greeting && <p className="mt-4 text-xl">{greeting}</p>}
     </div>
   );
 }
