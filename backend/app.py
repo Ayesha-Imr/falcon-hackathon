@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,4 +15,3 @@ def greet():
     name = data.get('name')
     greeting = f"Welcome, {name}!"
     return jsonify({'greeting': greeting})
-
