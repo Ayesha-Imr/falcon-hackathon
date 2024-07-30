@@ -8,7 +8,7 @@ export default function Home() {
   const [greeting, setGreeting] = useState('');
 
   const handleGreeting = async () => {
-    const response = await axios.post('/greet', { name });
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/greet`, { name });
     setGreeting(response.data.greeting);
   };
 
@@ -19,7 +19,7 @@ export default function Home() {
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="border p-2 mb-4 w-full text-black" 
+        className="border p-2 mb-4 w-full text-black"
         placeholder="Enter your name"
       />
       <button
