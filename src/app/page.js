@@ -9,6 +9,8 @@ export default function Home() {
 
   const handleGreeting = async () => {
     const response = await axios.post('/greet', { name });
+    // if running locally, then change the above line to
+    // const response = await axios.post('http://127.0.0.1:5000/greet', { name });
     setGreeting(response.data.greeting);
   };
 

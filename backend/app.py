@@ -10,3 +10,8 @@ def greet():
     name = data.get('name')
     greeting = f"Welcome, {name}!"
     return jsonify({'greeting': greeting})
+
+
+# uncomment the lines below if running locally
+# if __name__ == '__main__':  
+#     app.run(debug=True) 
