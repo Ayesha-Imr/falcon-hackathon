@@ -16,6 +16,5 @@ def greet():
     greeting = f"Welcome, {name}!"
     return jsonify({'greeting': greeting})
 
-env = os.getenv('FLASK_ENV', 'development')
-if env == 'development':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
