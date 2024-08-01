@@ -179,124 +179,129 @@ def userData(username):
 def getInsights(user_data, query):
 
     def getPosts(url):
-      # Initialize the ApifyClient with API token
-      client = ApifyClient(apify_api_key)
+        try:
+            # Initialize the ApifyClient with API token
+            client = ApifyClient(apify_api_key)
 
-      # Prepare the Actor input
-      run_input = {
-          "addParentData": False,
-          "directUrls": [url],
-          "enhanceUserSearchWithFacebookPage": True,
-          "isUserReelFeedURL": True,
-          "isUserTaggedFeedURL": False,
-          "resultsLimit": 5,
-          "resultsType": "posts",
-      }
+            # Prepare the Actor input
+            run_input = {
+                "addParentData": False,
+                "directUrls": [url],
+                "enhanceUserSearchWithFacebookPage": True,
+                "isUserReelFeedURL": True,
+                "isUserTaggedFeedURL": False,
+                "resultsLimit": 5,
+                "resultsType": "posts",
+            }
 
-      posts = []
+            posts = []
 
-      # Run the Actor and wait for it to finish
-      run = client.actor("shu8hvrXbJbY3Eb9W").call(run_input=run_input)
+            # Run the Actor and wait for it to finish
+            run = client.actor("shu8hvrXbJbY3Eb9W").call(run_input=run_input)
 
-      i = 0
-      # Fetch and print Actor results from the run's dataset (if there are any)
-      for item in client.dataset(run["defaultDatasetId"]).iterate_items():
-          i += 1
-          posts.append(item)
-          print("For ", url, " item: ", i, "\n")
-          print(item)
-      print("Length of posts: " + str(len(posts)))
+            i = 0
+            # Fetch and print Actor results from the run's dataset (if there are any)
+            for item in client.dataset(run["defaultDatasetId"]).iterate_items():
+                i += 1
+                posts.append(item)
+                print("For ", url, " item: ", i, "\n")
+                print(item)
+            print("Length of posts: " + str(len(posts)))
 
-      def extractPostData(original_dict):
-        # Extract the necessary information from the original dictionary
-        extracted_info = {
-            'Post Identification and Metadata': {
-                'type': original_dict.get('type'),
-                'timestamp': original_dict.get('timestamp'),
-            },
-            'Content': {
-                'caption': original_dict.get('caption'),
-                'hashtags': original_dict.get('hashtags'),
-                'mentions': original_dict.get('mentions'),
-                'url': original_dict.get('url'),
-                'videoUrl': original_dict.get('videoUrl') if original_dict.get('type') == 'Video' else None,
-                'displayUrl': original_dict.get('displayUrl'),
-            },
-            'Engagement Metrics': {
-                'commentsCount': original_dict.get('commentsCount'),
-                'likesCount': original_dict.get('likesCount'),
-                'videoViewCount': original_dict.get('videoViewCount') if original_dict.get('type') == 'Video' else None,
-                'videoPlayCount': original_dict.get('videoPlayCount') if original_dict.get('type') == 'Video' else None,
-            },
-            'Comments and Sentiments': {
-                'latestComments': [
-                    {
-                        'id': comment.get('id'),
-                        'text': comment.get('text'),
-                        'ownerUsername': comment.get('ownerUsername'),
-                        'timestamp': comment.get('timestamp'),
-                        'likesCount': comment.get('likesCount')
-                    } for comment in original_dict.get('latestComments', [])
-                ]
-            },
-            'User Information': {
-                'ownerFullName': original_dict.get('ownerFullName'),
-                'ownerUsername': original_dict.get('ownerUsername'),
-            },
-            'Tagged Users': [
-                {
-                    'full_name': user.get('full_name'),
-                    'username': user.get('username')
-                } for user in original_dict.get('taggedUsers', [])
-            ]
-        }
+            def extractPostData(original_dict):
+                # Extract the necessary information from the original dictionary
+                extracted_info = {
+                    'Post Identification and Metadata': {
+                        'type': original_dict.get('type'),
+                        'timestamp': original_dict.get('timestamp'),
+                    },
+                    'Content': {
+                        'caption': original_dict.get('caption'),
+                        'hashtags': original_dict.get('hashtags'),
+                        'mentions': original_dict.get('mentions'),
+                        'url': original_dict.get('url'),
+                        'videoUrl': original_dict.get('videoUrl') if original_dict.get('type') == 'Video' else None,
+                        'displayUrl': original_dict.get('displayUrl'),
+                    },
+                    'Engagement Metrics': {
+                        'commentsCount': original_dict.get('commentsCount'),
+                        'likesCount': original_dict.get('likesCount'),
+                        'videoViewCount': original_dict.get('videoViewCount') if original_dict.get('type') == 'Video' else None,
+                        'videoPlayCount': original_dict.get('videoPlayCount') if original_dict.get('type') == 'Video' else None,
+                    },
+                    'Comments and Sentiments': {
+                        'latestComments': [
+                            {
+                                'id': comment.get('id'),
+                                'text': comment.get('text'),
+                                'ownerUsername': comment.get('ownerUsername'),
+                                'timestamp': comment.get('timestamp'),
+                                'likesCount': comment.get('likesCount')
+                            } for comment in original_dict.get('latestComments', [])
+                        ]
+                    },
+                    'User Information': {
+                        'ownerFullName': original_dict.get('ownerFullName'),
+                        'ownerUsername': original_dict.get('ownerUsername'),
+                    },
+                    'Tagged Users': [
+                        {
+                            'full_name': user.get('full_name'),
+                            'username': user.get('username')
+                        } for user in original_dict.get('taggedUsers', [])
+                    ]
+                }
 
-        print(extracted_info)
+                print(extracted_info)
 
-        # Extract required information
-        type_info = extracted_info['Post Identification and Metadata']['type']
-        timestamp_info = extracted_info['Post Identification and Metadata']['timestamp']
-        caption_info = extracted_info['Content']['caption']
-        hashtags_info = ' '.join(['#' + tag for tag in extracted_info['Content']['hashtags']])
-        mentions_info = ' '.join(['@' + mention for mention in extracted_info['Content']['mentions']])
-        comments_count_info = extracted_info['Engagement Metrics']['commentsCount']
-        likes_count_info = extracted_info['Engagement Metrics']['likesCount']
-        video_view_count_info = extracted_info['Engagement Metrics']['videoViewCount']
-        video_play_count_info = extracted_info['Engagement Metrics']['videoPlayCount']
-        owner_username_info = extracted_info['User Information']['ownerUsername']
-        tagged_users_info = ' '.join(['@' + user['username'] for user in extracted_info['Tagged Users']])
+                # Extract required information
+                type_info = extracted_info['Post Identification and Metadata']['type']
+                timestamp_info = extracted_info['Post Identification and Metadata']['timestamp']
+                caption_info = extracted_info['Content']['caption']
+                hashtags_info = ' '.join(['#' + tag for tag in extracted_info['Content']['hashtags'] or []])  # Handle NoneType
+                mentions_info = ' '.join(['@' + mention for mention in extracted_info['Content']['mentions'] or []])  # Handle NoneType
+                comments_count_info = extracted_info['Engagement Metrics']['commentsCount']
+                likes_count_info = extracted_info['Engagement Metrics']['likesCount']
+                video_view_count_info = extracted_info['Engagement Metrics']['videoViewCount']
+                video_play_count_info = extracted_info['Engagement Metrics']['videoPlayCount']
+                owner_username_info = extracted_info['User Information']['ownerUsername']
+                tagged_users_info = ' '.join(['@' + user['username'] for user in extracted_info['Tagged Users']])
 
-        latest_comments_info = '\n'.join([comment['text'] for comment in extracted_info['Comments and Sentiments']['latestComments']])
+                latest_comments_info = '\n'.join([comment['text'] for comment in extracted_info['Comments and Sentiments']['latestComments']])
 
-        result_string = f"""type: {type_info}
-        timestamp: {timestamp_info}
-        caption: {caption_info}
-        mentions: {mentions_info}
-        commentsCount: {comments_count_info}
-        likesCount: {likes_count_info}
-        videoViewCount: {video_view_count_info}
-        videoPlayCount: {video_play_count_info}
-        ownerUsername: {owner_username_info}
-        taggedUsers: {tagged_users_info}
-        latestComments: {latest_comments_info}
-        """
+                result_string = f"""type: {type_info}
+                timestamp: {timestamp_info}
+                caption: {caption_info}
+                mentions: {mentions_info}
+                commentsCount: {comments_count_info}
+                likesCount: {likes_count_info}
+                videoViewCount: {video_view_count_info}
+                videoPlayCount: {video_play_count_info}
+                ownerUsername: {owner_username_info}
+                taggedUsers: {tagged_users_info}
+                latestComments: {latest_comments_info}
+                """
 
-        post_url = original_dict.get('url')  # Extract the post's URL
+                post_url = original_dict.get('url')  # Extract the post's URL
 
-        print(result_string)
-        return result_string, post_url
+                print(result_string)
+                return result_string, post_url
 
-      extractedPosts = []
-      postsUrls = []
-      i = 0
-      for post in posts:
-        i += 1
-        print(f"Post {i}:")
-        extractedPost, postUrl = extractPostData(post)
-        extractedPosts.append(extractedPost)
-        postsUrls.append(postUrl)
-      print("Length of extractedPosts: " + str(len(extractedPosts)) + "\n")
-      return extractedPosts, postsUrls
+            extractedPosts = []
+            postsUrls = []
+            i = 0
+            for post in posts:
+                i += 1
+                print(f"Post {i}:")
+                extractedPost, postUrl = extractPostData(post)
+                extractedPosts.append(extractedPost)
+                postsUrls.append(postUrl)
+            print("Length of extractedPosts: " + str(len(extractedPosts)) + "\n")
+            return extractedPosts, postsUrls
+
+        except Exception as e:
+            print(f"Error processing {url}: {str(e)}")
+            return [], []
 
     def getSimilarProfiles(query):
       searchQuery = query

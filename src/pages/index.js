@@ -13,11 +13,15 @@ export default function Home() {
     setLoading(true);  // Start loading
     try {
       // Call userData with the username to get user data
-      const userDataResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/userData`, { username: name });
+      const userDataResponse = await axios.post('/userData', { username: name });
+      // if running locally, then change the above line to
+      // const userDataResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/userData`, { username: name });
       const userData = userDataResponse.data;
 
       // Call getInsights with the user data and search query
-      const insightsResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/getInsights`, { user_data: userData, query: searchQuery });
+      const insightsResponse = await axios.post('/getInsights', { user_data: userData, query: searchQuery });
+      // if running locally, then change the above line to
+      //const insightsResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/getInsights`, { user_data: userData, query: searchQuery });
       const insightsData = insightsResponse.data;
 
       // Set the insights data to state
