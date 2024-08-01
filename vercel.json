@@ -11,8 +11,12 @@
   ],
   "routes": [
     {
-      "src": "/greet",
-      "dest": "backend/app.py"
+      "src": "/userData",
+      "dest": "/backend/app.py"
+    },
+    {
+      "src": "/getInsights",
+      "dest": "/backend/app.py"
     },
     {
       "src": "/(.*)",
