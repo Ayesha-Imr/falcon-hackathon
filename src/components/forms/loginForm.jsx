@@ -1,50 +1,62 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from 'axios';
 import Link from "next/link";
+import { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
 // Define your form schema
 const formSchema = z.object({
- 
   email: z.string().email(),
   password: z.string().min(8).max(50),
 });
 
 export default function LoginForm() {
+  const [message, setMessage] = useState('');
+
   // Initialize the form
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      
       email: "",
       password: "",
     },
   });
 
   // Handle form submission
-  function onSubmit(values) {
-    // Do something with the form values
-    console.log(values);
+  async function onSubmit(values) {
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/login', values);
+      console.log(response)
+      setMessage(`Success: ${response.data.message}`);
+    } catch (error) {
+      console.log(error)
+      if (error.response) {
+        setMessage(`Error: ${error.response.data.error}`);
+      } else {
+        setMessage('Error: Something went wrong.');
+      }
+    }
   }
 
   return (
@@ -60,41 +72,7 @@ export default function LoginForm() {
           <div className="grid gap-4">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                {/*
-                 <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <FormField
-                      control={form.control}
-                      name="firstName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>First name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="First name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <FormField
-                      control={form.control}
-                      name="lastName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Last name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Last name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div> */}
-              
-                <div className="grid  gap-4">
+                <div className="grid gap-4">
                   <FormField
                     control={form.control}
                     name="email"
@@ -126,17 +104,15 @@ export default function LoginForm() {
                   <Button type="submit" className="w-full">
                     Log In
                   </Button>
-                  {/* <Button variant="outline" className="w-full">
-                    Sign up with GitHub
-                  </Button> */}
                 </div>
               </form>
             </Form>
           </div>
+          {message && <p>{message}</p>}
           <div className="mt-4 text-center text-sm">
-            Dont have an account?{" "}
+            Don't have an account?{" "}
             <Link href="#" className="underline">
-             Register Now
+              Register Now
             </Link>
           </div>
         </CardContent>
