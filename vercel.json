@@ -26,5 +26,10 @@
       "src": "/(.*)",
       "dest": "/src/pages/$1"
     }
-  ]
+  ],
+  "functions": {
+    "backend/app.py": {
+      "maxDuration": 300 
+    }
+  }
 }
