@@ -29,7 +29,7 @@
   ],
   "functions": {
     "backend/app.py": {
-      "maxDuration": 300 
+      "maxDuration": 60 
     }
   }
 }
